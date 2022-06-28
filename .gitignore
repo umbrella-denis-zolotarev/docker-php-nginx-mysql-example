@@ -1,0 +1,9 @@
+# local and IDE filesystem
+.DS_Store
+.idea/
+
+# docker environment
+.env
+
+# mysql container
+/mysql/data

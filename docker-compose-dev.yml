@@ -1,0 +1,28 @@
+version: '3.5'
+
+services:
+  mysql-container:
+    image: arm64v8/mysql:oracle
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_NAME}
+    volumes:
+      - ./mysql/start.sql:/docker-entrypoint-initdb.d/start.sql
+#      - ./mysql/data/:/var/lib/mysql
+    ports:
+      - ${DB_PORT_LOCAL}:${DB_PORT}
+
+  nginx-container:
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./php/srv/public:/srv/public
+
+#  php-container:
+#    volumes:
+#      - ./php/srv:/srv
+#
+#  php-clone-container:
+#    volumes:
+#      - ./php/srv:/srv

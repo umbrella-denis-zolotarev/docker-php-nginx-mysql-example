@@ -1,0 +1,42 @@
+version: '3.5'
+
+x-php: &php-template
+  image: php-container-image:latest
+  working_dir: /srv
+  environment:
+    DB_HOST: ${DB_HOST}
+    DB_NAME: ${DB_NAME}
+    DB_USER: ${DB_USER}
+    DB_PASSWORD: ${DB_PASSWORD}
+    DB_PORT: ${DB_PORT}
+  healthcheck:
+    test: [ "CMD", "php-fpm", "-t" ]
+    timeout: 45s
+    interval: 2s
+    retries: 20
+
+services:
+  nginx-container:
+    image: nginx-container-image
+    working_dir: /srv/public
+    restart: always
+    build:
+      context: ./nginx
+      target: nginx-container-image
+    env_file:
+      - ./.env
+    depends_on:
+      php-container:
+        condition: service_healthy
+    ports:
+      - 80:80
+
+  php-container:
+    <<: *php-template
+    build:
+      context: ./php
+      target: php-container-image
+
+  php-clone-container:
+    <<: *php-template
+    command: tail -f /srv/public/index.php
